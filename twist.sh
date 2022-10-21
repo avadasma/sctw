@@ -512,16 +512,16 @@ function sslibevinstall(){
             echo "/usr/lib" > /etc/ld.so.conf.d/lib.conf
         fi
         ldconfig
-        [ -z "$mbedtlsver" ] && mbedtlsver="$(wget -qO- https://tls.mbed.org/download-archive | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | cut -d'.' -f1,2,3 | sort -V | tail -1)"
-        wget -t 3 -T 30 -nv -O mbedtls-${mbedtlsver}-gpl.tgz https://tls.mbed.org/download/mbedtls-${mbedtlsver}-gpl.tgz
+        [ -z "$mbedtlsver" ] && mbedtlsver="$(wget -qO- https://api.github.com/repos/Mbed-TLS/mbedtls/releases/latest | grep 'tag_name' | cut -d\" -f4 | cut -d'-' -f1)"
+        wget -t 3 -T 30 -nv -O mbedtls-${mbedtlsver}.tar.gz https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/${mbedtlsver}.tar.gz
         [ "$?" != "0" ] && sslibevinstallerr "mbedtls-${mbedtlsver}"
         [ -d mbedtls-${mbedtlsver} ] && rm -rf mbedtls-${mbedtlsver}
-        tar xf mbedtls-${mbedtlsver}-gpl.tgz
+        tar zxf mbedtls-${mbedtlsver}.tar.gz
         pushd mbedtls-${mbedtlsver}
         make SHARED=1 CFLAGS=-fPIC "-j$((MAKECORES+1))" && make DESTDIR=/usr install || sslibevinstallerr "mbedtls-${mbedtlsver}" err
         popd
         ldconfig
-        rm -rf libsodium-${libsodiumver}.tar.gz libsodium-${libsodiumver} mbedtls-${mbedtlsver}-gpl.tgz mbedtls-${mbedtlsver}
+        rm -rf libsodium-${libsodiumver}.tar.gz libsodium-${libsodiumver} mbedtls-${mbedtlsver}.tar.gz mbedtls-${mbedtlsver}
     fi
     [ -z "$sslibevtag" ] && sslibevtag="$(wget -qO- https://api.github.com/repos/shadowsocks/shadowsocks-libev/releases/latest | grep 'tag_name' | cut -d\" -f4)"
     sslibevver="shadowsocks-libev-$(echo ${sslibevtag} | sed -e 's/^[a-zA-Z]//g')"
