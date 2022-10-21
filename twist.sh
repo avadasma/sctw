@@ -517,11 +517,11 @@ function sslibevinstall(){
         [ "$?" != "0" ] && sslibevinstallerr "mbedtls-${mbedtlsver}"
         [ -d mbedtls-${mbedtlsver} ] && rm -rf mbedtls-${mbedtlsver}
         tar zxf mbedtls-${mbedtlsver}.tar.gz
-        pushd mbedtls-${mbedtlsver}
-        make SHARED=1 CFLAGS=-fPIC "-j$((MAKECORES+1))" && make DESTDIR=/usr install || sslibevinstallerr "mbedtls-${mbedtlsver}" err
+        pushd mbedtls-${mbedtlsver:1}
+        make SHARED=1 CFLAGS=-fPIC "-j$((MAKECORES+1))" && make DESTDIR=/usr install || sslibevinstallerr "mbedtls-${mbedtlsver:1}" err
         popd
         ldconfig
-        rm -rf libsodium-${libsodiumver}.tar.gz libsodium-${libsodiumver} mbedtls-${mbedtlsver}.tar.gz mbedtls-${mbedtlsver}
+        rm -rf libsodium-${libsodiumver}.tar.gz libsodium-${libsodiumver} mbedtls-${mbedtlsver:1}.tar.gz mbedtls-${mbedtlsver:1}
     fi
     [ -z "$sslibevtag" ] && sslibevtag="$(wget -qO- https://api.github.com/repos/shadowsocks/shadowsocks-libev/releases/latest | grep 'tag_name' | cut -d\" -f4)"
     sslibevver="shadowsocks-libev-$(echo ${sslibevtag} | sed -e 's/^[a-zA-Z]//g')"
